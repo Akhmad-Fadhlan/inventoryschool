@@ -14,8 +14,8 @@ const STATE = {
   cachedStats: null,
   theme: 'light',
   // Configuration options (can be overridden in UI settings)
-  apiBaseUrl: localStorage.getItem('sisma_api_url') || '',
-  googleClientId: localStorage.getItem('sisma_google_client_id') || '',
+  apiBaseUrl: localStorage.getItem('sisma_api_url') || 'https://script.google.com/macros/library/d/1RFhwQVzj2sX1Hewj0EgaymDwC26IadYEgUZYSOBgyRN3DnYzAX5UcBLM/2',
+  googleClientId: localStorage.getItem('sisma_google_client_id') || '584473225066-8564o8cu6n788pko626j64g9fn1qps7s.apps.googleusercontent.com',
   // UI States
   loadingAssets: false,
   submittingForm: false,
