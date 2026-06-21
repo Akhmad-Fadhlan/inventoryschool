@@ -1,4 +1,4 @@
-/**
+/** 
  * app.js
  * Core application controller for SISMA Plain HTML/CSS/JS Frontend.
  * Implements clean state management, hash routing, GSI OAuth, XSS prevention, and print controls.
