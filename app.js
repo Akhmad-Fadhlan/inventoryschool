@@ -173,7 +173,9 @@ async function apiRequest(endpoint, options = {}) {
   };
 
   if (requestBody && fetchMethod !== 'GET') {
-    fetchOptions.headers['Content-Type'] = 'application/json';
+    // We use 'text/plain' instead of 'application/json' to prevent the browser from sending 
+    // a CORS preflight OPTIONS request, which Google Apps Script does not support.
+    fetchOptions.headers['Content-Type'] = 'text/plain';
     fetchOptions.body = JSON.stringify(requestBody);
   }
 
