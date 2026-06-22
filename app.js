@@ -5,7 +5,7 @@
  */
 
 // Global State
-const STATE = {
+const STATE = { 
   user: null,
   token: null,
   activeView: 'dashboard',
