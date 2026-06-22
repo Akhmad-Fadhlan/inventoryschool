@@ -1082,27 +1082,31 @@ async function uploadPhoto(assetId, base64Image) {
 // Prefill form edit asset
 function prefillEditForm(asset) {
   const form = document.getElementById('form-edit-asset');
-  form.elements['asset_id'].value = asset.asset_id;
-  form.elements['item_name'].value = decodeHtml(asset.item_name);
-  form.elements['category_id'].value = asset.category_id;
-  form.elements['branch_id'].value = asset.branch_id;
+  if (!form) return;
   
-  // Fill rooms dropdown for the branch first
-  renderRoomsDropdown(form.elements['room_id'], asset.branch_id);
-  form.elements['room_id'].value = asset.room_id;
+  if (form.elements['asset_id']) form.elements['asset_id'].value = asset.asset_id || '';
+  if (form.elements['item_name']) form.elements['item_name'].value = decodeHtml(asset.item_name || '');
+  if (form.elements['category_id']) form.elements['category_id'].value = asset.category_id || '';
+  if (form.elements['branch_id']) form.elements['branch_id'].value = asset.branch_id || '';
   
-  form.elements['pic_id'].value = asset.pic_id;
-  form.elements['brand'].value = asset.brand ? decodeHtml(asset.brand) : '';
-  form.elements['serial_number'].value = asset.serial_number ? decodeHtml(asset.serial_number) : '';
-  form.elements['condition'].value = asset.condition;
-  form.elements['jumlah'].value = asset.jumlah !== undefined ? asset.jumlah : 1;
-  form.elements['tanggal_pemasangan'].value = asset.tanggal_pemasangan ? asset.tanggal_pemasangan.split('T')[0] : '';
-  form.elements['status_koneksi'].value = asset.status_koneksi || 'OFFLINE';
-  form.elements['status_check'].value = asset.status_check || 'Baik';
-  form.elements['tanggal_evaluasi'].value = asset.tanggal_evaluasi ? asset.tanggal_evaluasi.split('T')[0] : '';
-  form.elements['catatan_masalah'].value = asset.catatan_masalah ? decodeHtml(asset.catatan_masalah) : '';
-  form.elements['tindakan_perbaikan'].value = asset.tindakan_perbaikan ? decodeHtml(asset.tindakan_perbaikan) : '';
-  form.elements['notes'].value = asset.notes ? decodeHtml(asset.notes) : '';
+  if (form.elements['room_id']) {
+    renderRoomsDropdown(form.elements['room_id'], asset.branch_id);
+    form.elements['room_id'].value = asset.room_id || '';
+  }
+  
+  if (form.elements['pic_id']) form.elements['pic_id'].value = asset.pic_id || '';
+  if (form.elements['brand']) form.elements['brand'].value = asset.brand ? decodeHtml(asset.brand) : '';
+  if (form.elements['serial_number']) form.elements['serial_number'].value = asset.serial_number ? decodeHtml(asset.serial_number) : '';
+  if (form.elements['condition']) form.elements['condition'].value = asset.condition || 'GOOD';
+  if (form.elements['status']) form.elements['status'].value = asset.status || 'AVAILABLE';
+  if (form.elements['jumlah']) form.elements['jumlah'].value = asset.jumlah !== undefined ? asset.jumlah : 1;
+  if (form.elements['tanggal_pemasangan']) form.elements['tanggal_pemasangan'].value = asset.tanggal_pemasangan ? asset.tanggal_pemasangan.split('T')[0] : '';
+  if (form.elements['status_koneksi']) form.elements['status_koneksi'].value = asset.status_koneksi || 'OFFLINE';
+  if (form.elements['status_check']) form.elements['status_check'].value = asset.status_check || 'Baik';
+  if (form.elements['tanggal_evaluasi']) form.elements['tanggal_evaluasi'].value = asset.tanggal_evaluasi ? asset.tanggal_evaluasi.split('T')[0] : '';
+  if (form.elements['catatan_masalah']) form.elements['catatan_masalah'].value = asset.catatan_masalah ? decodeHtml(asset.catatan_masalah) : '';
+  if (form.elements['tindakan_perbaikan']) form.elements['tindakan_perbaikan'].value = asset.tindakan_perbaikan ? decodeHtml(asset.tindakan_perbaikan) : '';
+  if (form.elements['notes']) form.elements['notes'].value = asset.notes ? decodeHtml(asset.notes) : '';
 }
 
 async function deleteAsset(assetId) {
@@ -1653,21 +1657,21 @@ async function handleAddAssetSubmit(e) {
   const submitBtn = document.getElementById('btn-save-add-asset');
   
   const payload = {
-    item_name: form.elements['item_name'].value.trim(),
-    category_id: form.elements['category_id'].value,
-    branch_id: form.elements['branch_id'].value,
-    room_id: form.elements['room_id'].value,
-    pic_id: form.elements['pic_id'].value,
-    brand: form.elements['brand'].value.trim(),
-    serial_number: form.elements['serial_number'].value.trim(),
-    jumlah: parseInt(form.elements['jumlah'].value, 10) || 1,
-    tanggal_pemasangan: form.elements['tanggal_pemasangan'].value || '',
-    status_koneksi: form.elements['status_koneksi'].value || 'OFFLINE',
-    status_check: form.elements['status_check'].value || 'Baik',
-    tanggal_evaluasi: form.elements['tanggal_evaluasi'].value || '',
-    catatan_masalah: form.elements['catatan_masalah'].value.trim(),
-    tindakan_perbaikan: form.elements['tindakan_perbaikan'].value.trim(),
-    notes: form.elements['notes'].value.trim()
+    item_name: form.elements['item_name'] ? form.elements['item_name'].value.trim() : '',
+    category_id: form.elements['category_id'] ? form.elements['category_id'].value : '',
+    branch_id: form.elements['branch_id'] ? form.elements['branch_id'].value : '',
+    room_id: form.elements['room_id'] ? form.elements['room_id'].value : '',
+    pic_id: form.elements['pic_id'] ? form.elements['pic_id'].value : '',
+    brand: form.elements['brand'] ? form.elements['brand'].value.trim() : '',
+    serial_number: form.elements['serial_number'] ? form.elements['serial_number'].value.trim() : '',
+    jumlah: (form.elements['jumlah'] && form.elements['jumlah'].value) ? parseInt(form.elements['jumlah'].value, 10) : 1,
+    tanggal_pemasangan: (form.elements['tanggal_pemasangan'] && form.elements['tanggal_pemasangan'].value) ? form.elements['tanggal_pemasangan'].value : '',
+    status_koneksi: (form.elements['status_koneksi'] && form.elements['status_koneksi'].value) ? form.elements['status_koneksi'].value : 'OFFLINE',
+    status_check: (form.elements['status_check'] && form.elements['status_check'].value) ? form.elements['status_check'].value : 'Baik',
+    tanggal_evaluasi: (form.elements['tanggal_evaluasi'] && form.elements['tanggal_evaluasi'].value) ? form.elements['tanggal_evaluasi'].value : '',
+    catatan_masalah: (form.elements['catatan_masalah'] && form.elements['catatan_masalah'].value) ? form.elements['catatan_masalah'].value.trim() : '',
+    tindakan_perbaikan: (form.elements['tindakan_perbaikan'] && form.elements['tindakan_perbaikan'].value) ? form.elements['tindakan_perbaikan'].value.trim() : '',
+    notes: form.elements['notes'] ? form.elements['notes'].value.trim() : ''
   };
 
   if (!payload.item_name || !payload.category_id || !payload.branch_id || !payload.room_id || !payload.pic_id) {
@@ -1691,6 +1695,7 @@ async function handleAddAssetSubmit(e) {
       showNotice(res.message || 'Gagal menambahkan aset.', 'error');
     }
   } catch (err) {
+    showNotice(err.message || 'Terjadi kesalahan koneksi atau server.', 'error');
   } finally {
     toggleFormSubmitting(submitBtn, false, 'Simpan Aset');
   }
@@ -1703,23 +1708,23 @@ async function handleEditAssetSubmit(e) {
   const assetId = form.elements['asset_id'].value;
 
   const payload = {
-    item_name: form.elements['item_name'].value.trim(),
-    category_id: form.elements['category_id'].value,
-    branch_id: form.elements['branch_id'].value,
-    room_id: form.elements['room_id'].value,
-    pic_id: form.elements['pic_id'].value,
-    brand: form.elements['brand'].value.trim(),
-    serial_number: form.elements['serial_number'].value.trim(),
-    condition: form.elements['condition'].value,
-    status: form.elements['status'].value,
-    jumlah: parseInt(form.elements['jumlah'].value, 10) || 1,
-    tanggal_pemasangan: form.elements['tanggal_pemasangan'].value || '',
-    status_koneksi: form.elements['status_koneksi'].value || 'OFFLINE',
-    status_check: form.elements['status_check'].value || 'Baik',
-    tanggal_evaluasi: form.elements['tanggal_evaluasi'].value || '',
-    catatan_masalah: form.elements['catatan_masalah'].value.trim(),
-    tindakan_perbaikan: form.elements['tindakan_perbaikan'].value.trim(),
-    notes: form.elements['notes'].value.trim()
+    item_name: form.elements['item_name'] ? form.elements['item_name'].value.trim() : '',
+    category_id: form.elements['category_id'] ? form.elements['category_id'].value : '',
+    branch_id: form.elements['branch_id'] ? form.elements['branch_id'].value : '',
+    room_id: form.elements['room_id'] ? form.elements['room_id'].value : '',
+    pic_id: form.elements['pic_id'] ? form.elements['pic_id'].value : '',
+    brand: form.elements['brand'] ? form.elements['brand'].value.trim() : '',
+    serial_number: form.elements['serial_number'] ? form.elements['serial_number'].value.trim() : '',
+    condition: form.elements['condition'] ? form.elements['condition'].value : 'GOOD',
+    status: form.elements['status'] ? form.elements['status'].value : 'AVAILABLE',
+    jumlah: (form.elements['jumlah'] && form.elements['jumlah'].value) ? parseInt(form.elements['jumlah'].value, 10) : 1,
+    tanggal_pemasangan: (form.elements['tanggal_pemasangan'] && form.elements['tanggal_pemasangan'].value) ? form.elements['tanggal_pemasangan'].value : '',
+    status_koneksi: (form.elements['status_koneksi'] && form.elements['status_koneksi'].value) ? form.elements['status_koneksi'].value : 'OFFLINE',
+    status_check: (form.elements['status_check'] && form.elements['status_check'].value) ? form.elements['status_check'].value : 'Baik',
+    tanggal_evaluasi: (form.elements['tanggal_evaluasi'] && form.elements['tanggal_evaluasi'].value) ? form.elements['tanggal_evaluasi'].value : '',
+    catatan_masalah: (form.elements['catatan_masalah'] && form.elements['catatan_masalah'].value) ? form.elements['catatan_masalah'].value.trim() : '',
+    tindakan_perbaikan: (form.elements['tindakan_perbaikan'] && form.elements['tindakan_perbaikan'].value) ? form.elements['tindakan_perbaikan'].value.trim() : '',
+    notes: form.elements['notes'] ? form.elements['notes'].value.trim() : ''
   };
 
   try {
@@ -1737,6 +1742,7 @@ async function handleEditAssetSubmit(e) {
       showNotice(res.message || 'Gagal menyimpan perubahan.', 'error');
     }
   } catch (err) {
+    showNotice(err.message || 'Terjadi kesalahan koneksi atau server.', 'error');
   } finally {
     toggleFormSubmitting(submitBtn, false, 'Simpan Perubahan');
   }
