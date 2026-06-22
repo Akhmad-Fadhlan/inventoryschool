@@ -849,6 +849,13 @@ async function fetchAssetDetail(assetId) {
       const roomOpt = ROOM_OPTIONS.find(r => r.id === item.room_id);
       document.getElementById('detail-asset-room').textContent = roomOpt ? roomOpt.label : item.room_id;
       
+      document.getElementById('detail-asset-jumlah').textContent = item.jumlah !== undefined ? item.jumlah : '1';
+      document.getElementById('detail-asset-pemasangan').textContent = item.tanggal_pemasangan ? formatDateOnly(item.tanggal_pemasangan) : 'Tidak ada';
+      document.getElementById('detail-asset-koneksi').textContent = item.status_koneksi || 'OFFLINE';
+      document.getElementById('detail-asset-check').textContent = item.status_check || 'Baik';
+      document.getElementById('detail-asset-evaluasi').textContent = item.tanggal_evaluasi ? formatDateOnly(item.tanggal_evaluasi) : 'Tidak ada';
+      document.getElementById('detail-asset-catatan-masalah').textContent = item.catatan_masalah ? decodeHtml(item.catatan_masalah) : 'Tidak ada';
+      document.getElementById('detail-asset-tindakan-perbaikan').textContent = item.tindakan_perbaikan ? decodeHtml(item.tindakan_perbaikan) : 'Tidak ada';
       document.getElementById('detail-asset-notes').textContent = item.notes ? decodeHtml(item.notes) : 'Tidak ada catatan tambahan.';
 
       // QR Image loading
@@ -1061,7 +1068,13 @@ function prefillEditForm(asset) {
   form.elements['brand'].value = asset.brand ? decodeHtml(asset.brand) : '';
   form.elements['serial_number'].value = asset.serial_number ? decodeHtml(asset.serial_number) : '';
   form.elements['condition'].value = asset.condition;
-  form.elements['status'].value = asset.status;
+  form.elements['jumlah'].value = asset.jumlah !== undefined ? asset.jumlah : 1;
+  form.elements['tanggal_pemasangan'].value = asset.tanggal_pemasangan ? asset.tanggal_pemasangan.split('T')[0] : '';
+  form.elements['status_koneksi'].value = asset.status_koneksi || 'OFFLINE';
+  form.elements['status_check'].value = asset.status_check || 'Baik';
+  form.elements['tanggal_evaluasi'].value = asset.tanggal_evaluasi ? asset.tanggal_evaluasi.split('T')[0] : '';
+  form.elements['catatan_masalah'].value = asset.catatan_masalah ? decodeHtml(asset.catatan_masalah) : '';
+  form.elements['tindakan_perbaikan'].value = asset.tindakan_perbaikan ? decodeHtml(asset.tindakan_perbaikan) : '';
   form.elements['notes'].value = asset.notes ? decodeHtml(asset.notes) : '';
 }
 
@@ -1620,6 +1633,13 @@ async function handleAddAssetSubmit(e) {
     pic_id: form.elements['pic_id'].value,
     brand: form.elements['brand'].value.trim(),
     serial_number: form.elements['serial_number'].value.trim(),
+    jumlah: parseInt(form.elements['jumlah'].value, 10) || 1,
+    tanggal_pemasangan: form.elements['tanggal_pemasangan'].value || '',
+    status_koneksi: form.elements['status_koneksi'].value || 'OFFLINE',
+    status_check: form.elements['status_check'].value || 'Baik',
+    tanggal_evaluasi: form.elements['tanggal_evaluasi'].value || '',
+    catatan_masalah: form.elements['catatan_masalah'].value.trim(),
+    tindakan_perbaikan: form.elements['tindakan_perbaikan'].value.trim(),
     notes: form.elements['notes'].value.trim()
   };
 
@@ -1665,6 +1685,13 @@ async function handleEditAssetSubmit(e) {
     serial_number: form.elements['serial_number'].value.trim(),
     condition: form.elements['condition'].value,
     status: form.elements['status'].value,
+    jumlah: parseInt(form.elements['jumlah'].value, 10) || 1,
+    tanggal_pemasangan: form.elements['tanggal_pemasangan'].value || '',
+    status_koneksi: form.elements['status_koneksi'].value || 'OFFLINE',
+    status_check: form.elements['status_check'].value || 'Baik',
+    tanggal_evaluasi: form.elements['tanggal_evaluasi'].value || '',
+    catatan_masalah: form.elements['catatan_masalah'].value.trim(),
+    tindakan_perbaikan: form.elements['tindakan_perbaikan'].value.trim(),
     notes: form.elements['notes'].value.trim()
   };
 
@@ -2041,6 +2068,21 @@ function formatDate(isoString) {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
+    });
+  } catch {
+    return isoString;
+  }
+}
+
+function formatDateOnly(isoString) {
+  if (!isoString) return '-';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
     });
   } catch {
     return isoString;
