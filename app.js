@@ -5,7 +5,7 @@
  */
 
 // Global State
-const STATE = { 
+const STATE = {
   user: null,
   token: null,
   activeView: 'dashboard',
@@ -36,7 +36,7 @@ const ROLES = {
   TEACHER: 'TEACHER'
 };
 
-const CATEGORY_OPTIONS = [
+let CATEGORY_OPTIONS = [
   { id: 'LAPTOP', label: 'Laptop' },
   { id: 'PROYEKTOR', label: 'Proyektor' },
   { id: 'KURSI', label: 'Kursi' },
@@ -45,20 +45,20 @@ const CATEGORY_OPTIONS = [
   { id: 'LAINNYA', label: 'Lain-lain' }
 ];
 
-const BRANCH_OPTIONS = [
+let BRANCH_OPTIONS = [
   { id: 'CBG01', label: 'Cabang Utama' },
   { id: 'CBG02', label: 'Cabang Pembantu' },
   { id: 'CBG03', label: 'Cabang Khusus' }
 ];
 
-const ROOM_OPTIONS = [
+let ROOM_OPTIONS = [
   { id: 'RUANG_KELAS_1', label: 'Ruang Kelas 1' },
   { id: 'LAB_KOMPUTER', label: 'Lab Komputer' },
   { id: 'RUANG_GURU', label: 'Ruang Guru' },
   { id: 'AULA', label: 'Aula' }
 ];
 
-const PIC_OPTIONS = [
+let PIC_OPTIONS = [
   { id: 'USR001', label: 'Pak Budi' },
   { id: 'USR002', label: 'Ibu Ani' },
   { id: 'USR003', label: 'Pak Eko' }
@@ -206,6 +206,7 @@ function checkSession() {
     STATE.user = JSON.parse(userStr);
     renderAuthenticatedState();
     loadActiveView();
+    fetchMasterData(); // Fetch dynamic master data on load
   } else {
     renderLoginState();
   }
@@ -220,6 +221,7 @@ function handleLoginSuccess(sessionData) {
   
   showNotice(`Selamat datang, ${sessionData.user.name}!`, 'success');
   renderAuthenticatedState();
+  fetchMasterData(); // Fetch dynamic master data on login success
   
   // Set default view hash and load
   window.location.hash = '#dashboard';
@@ -239,6 +241,31 @@ function logout() {
   
   showNotice('Logout berhasil.', 'info');
   renderLoginState();
+}
+
+async function fetchMasterData() {
+  try {
+    const res = await apiRequest('/api/v1/master-data');
+    if (res.success && res.data) {
+      const data = res.data;
+      if (data.categories && data.categories.length > 0) {
+        CATEGORY_OPTIONS = data.categories.map(c => ({ id: c.id, label: c.name }));
+      }
+      if (data.branches && data.branches.length > 0) {
+        BRANCH_OPTIONS = data.branches.map(b => ({ id: b.id, label: b.name }));
+      }
+      if (data.rooms && data.rooms.length > 0) {
+        ROOM_OPTIONS = data.rooms.map(r => ({ id: r.id, label: r.name, branch_id: r.branch_id }));
+      }
+      if (data.pics && data.pics.length > 0) {
+        PIC_OPTIONS = data.pics.map(p => ({ id: p.id, label: p.name, email: p.email, branch_id: p.branch_id }));
+      }
+      // Re-populate dropdowns with actual master DB data
+      bootstrapModalsDropdowns();
+    }
+  } catch (err) {
+    console.warn('Failed to load dynamic master data from backend. Falling back to default options.', err);
+  }
 }
 
 // Google OAuth Credential Handler (called by GSI)
@@ -2000,14 +2027,14 @@ function renderBranchesDropdown(selectEl) {
 }
 
 function renderRoomsDropdown(selectEl, branchId) {
-  // Rooms can be mapped dynamically to branch
   selectEl.innerHTML = '<option value="">Pilih Ruangan</option>';
   if (!branchId) return;
 
-  // Render mock rooms
   ROOM_OPTIONS.forEach(opt => {
-    const op = new Option(opt.label, opt.id);
-    selectEl.add(op);
+    if (!opt.branch_id || String(opt.branch_id) === String(branchId)) {
+      const op = new Option(opt.label, opt.id);
+      selectEl.add(op);
+    }
   });
 }
 
